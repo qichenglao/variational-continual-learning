@@ -22,13 +22,13 @@ keras.backend.set_session(sess)
 # the data, shuffled and split between train and test sets
 data_name = 'notmnist'
 if data_name == 'mnist':
-    from mnist import load_mnist
+    from dgm.alg.mnist import load_mnist
     x_train, x_test, y_train, y_test = load_mnist()
 if data_name == 'notmnist':
-    from notmnist import load_notmnist
-    data_path = # TODO
+    from dgm.alg.notmnist import load_notmnist
+    data_path = '' # TODO
     x_train, x_test, y_train, y_test = [], [], [], []
-    for i in xrange(10):
+    for i in range(10):
         a, b, c, d = load_notmnist(data_path, [i], ratio=0.995)
         x_train.append(a); x_test.append(b)
         y_train.append(c); y_test.append(d)
@@ -43,7 +43,7 @@ dimH = 1000
 n_layer = 3
 model.add(Dense(dimH, activation='relu', input_shape=(784,)))
 model.add(Dropout(0.2))
-for _ in xrange(n_layer-1):
+for _ in range(n_layer-1):
     model.add(Dense(dimH, activation='relu'))
     model.add(Dropout(0.2))
 model.add(Dense(num_classes, activation='softmax'))
@@ -66,7 +66,7 @@ print('Test accuracy:', score[1])
 # save model for future test
 if not os.path.isdir('save/'):
     os.mkdir('save/')
-    print 'create path save/'
+    print('create path save/')
 file_name = 'save/'+data_name
 model.save_weights(file_name+'_weights.h5')
 print('model weights saved to file ' + file_name + '_weights.h5')

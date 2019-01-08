@@ -1,6 +1,6 @@
 import numpy as np
 import tensorflow as tf
-from helper_functions import *
+from dgm.alg.helper_functions import *
 import time
 
 def IS_estimate(x, enc, dec, ll, K = 100, sample_W = True, mu_pz = 0.0, log_sig_pz = 0.0):
@@ -38,10 +38,10 @@ def construct_eval_func(X_ph, enc, dec, ll, batch_size_ph, K = 100, sample_W = T
     
     def eval(sess, X):
         N = X.shape[0]        
-        n_iter_vae = N / batch_size
+        n_iter_vae = int(N / batch_size)
         bound_total = 0.0; bound_var = 0.0
         begin = time.time()
-        for j in xrange(0, n_iter_vae):
+        for j in range(0, n_iter_vae):
             indl = j * batch_size
             indr = min((j+1) * batch_size, N)
             logp_mean, logp_var = sess.run(ops, feed_dict={X_ph: X[indl:indr], 
@@ -49,8 +49,8 @@ def construct_eval_func(X_ph, enc, dec, ll, batch_size_ph, K = 100, sample_W = T
             bound_total += logp_mean / n_iter_vae
             bound_var += logp_var / n_iter_vae
         end = time.time()
-        print "test_ll=%.2f, ste=%.2f, time=%.2f" \
-                  % (bound_total, np.sqrt(bound_var / N), end - begin)
+        print("test_ll=%.2f, ste=%.2f, time=%.2f" \
+                  % (bound_total, np.sqrt(bound_var / N), end - begin))
         return bound_total, np.sqrt(bound_var / N)
         
     return eval

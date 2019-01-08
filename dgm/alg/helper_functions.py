@@ -67,7 +67,7 @@ def log_logit_normal_prob(x, mu, log_sig):
     return tf.reduce_sum(logprob, ind)
 
 def log_logistic_prob(x, mu, log_scale):
-    s = (x - mu) / tf.exp(g_scale)
+    s = (x - mu) / tf.exp(log_scale)
     logprob = -s - log_scale - 2 * tf.nn.softplus(-s)
     ind = list(range(1, len(x.get_shape().as_list())))
     return tf.reduce_sum(logprob, ind)

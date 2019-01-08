@@ -1,6 +1,6 @@
 import numpy as np
 import tensorflow as tf
-from helper_functions import *
+from dgm.alg.helper_functions import *
 import time
 
 def get_q_theta_params():
@@ -41,16 +41,16 @@ def update_q_sigma(sess):
         if 'log_sig' in name:
             shape = q_params[name].get_shape().as_list()
             sess.run(tf.assign(q_params[name], np.ones(shape)*-6))
-    print 'reset the log sigma of q to -5'
+    print('reset the log sigma of q to -5')
     
 def KL_param(shared_prior_params, task):
     # first get q params
     shared_q_params = get_q_theta_params()
-    N_layer = len(shared_q_params.keys()) / 4	# one layer has for params
+    N_layer = int(len(shared_q_params.keys()) / 4)	# one layer has for params
     # then compute kl between prior and q
     kl_total = 0.0
     # for the shared network
-    for l in xrange(N_layer):
+    for l in range(N_layer):
         suffices = ['W', 'b']
         for suffix in suffices:
             mu_q = shared_q_params['gen_shared_l%d_mu_' % l + suffix + ':0']
@@ -61,8 +61,8 @@ def KL_param(shared_prior_params, task):
 
     # for the head network
     head_q_params = get_headnet_params(task)
-    N_layer = len(head_q_params.keys()) / 4	# one layer has for params
-    for l in xrange(N_layer):
+    N_layer = int(len(head_q_params.keys()) / 4)	# one layer has for params
+    for l in range(N_layer):
         for suffix in ['W', 'b']:
             mu_q = shared_q_params['gen_head%d_l%d_mu_' % (task, l) + suffix + ':0']
             log_sig_q = shared_q_params['gen_head%d_l%d_log_sig_' % (task, l) + suffix + ':0']
@@ -75,9 +75,9 @@ def lowerbound(x, enc, dec, ll, K = 1, mu_pz = 0.0, log_sig_pz = 0.0):
     #z = sample_gaussian(mu_qz, log_sig_qz)
     kl_z = KL(mu_qz, log_sig_qz, mu_pz, log_sig_pz)
     if K > 1:
-        print 'using K=%d theta samples for onlinevi' % K
+        print('using K=%d theta samples for onlinevi' % K)
     logp = 0.0
-    for _ in xrange(K):
+    for _ in range(K):
         # see bayesian_generator.py, tiling z does not work!
         z = sample_gaussian(mu_qz, log_sig_qz)	# sample different z
         mu_x = dec(z)	# sample different theta
@@ -112,14 +112,14 @@ def construct_optimizer(X_ph, enc, dec, ll, N_data, batch_size_ph, shared_prior_
 
     def fit(sess, X, n_iter, lr):
         N = X.shape[0]        
-        print "training for %d epochs with lr=%.5f" % (n_iter, lr)
+        print("training for %d epochs with lr=%.5f" % (n_iter, lr))
         begin = time.time()
-        n_iter_vae = N / batch_size
-        for iteration in xrange(1, n_iter + 1):
+        n_iter_vae = int(N / batch_size)
+        for iteration in range(1, n_iter + 1):
             ind_s = np.random.permutation(range(N))
             bound_total = 0.0
             kl_total = 0.0
-            for j in xrange(0, n_iter_vae):
+            for j in range(0, n_iter_vae):
                 indl = j * batch_size
                 indr = (j+1) * batch_size
                 ind = ind_s[indl:min(indr, N)]
@@ -129,8 +129,8 @@ def construct_optimizer(X_ph, enc, dec, ll, N_data, batch_size_ph, shared_prior_
                 bound_total += logp / n_iter_vae
                 kl_total += kl / n_iter_vae
             end = time.time()
-            print "Iter %d, bound=%.2f, kl=%.2f, time=%.2f" \
-                  % (iteration, bound_total, kl_total, end - begin)
+            print("Iter %d, bound=%.2f, kl=%.2f, time=%.2f" \
+                  % (iteration, bound_total, kl_total, end - begin))
             begin = end
 
     return fit
