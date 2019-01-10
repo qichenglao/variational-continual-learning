@@ -2,9 +2,9 @@ import numpy as np
 import tensorflow as tf
 import sys, os
 sys.path.extend(['alg/', 'models/'])
-from dgm.models.visualisation import plot_images
-from dgm.models.encoder_no_shared import encoder, recon
-from dgm.models.utils import init_variables, save_params, load_params, load_data
+from dgm.utils.visualisation import plot_images
+from dgm.models.encoder_no_shared import encoder
+from dgm.utils.utils import init_variables, save_params, load_params
 from dgm.alg.eval_test_ll import construct_eval_func
 
 dimZ = 50
@@ -19,12 +19,12 @@ data_path = '' # TODO
 
 def main(data_name, method, dimZ, dimH, n_channel, batch_size, K_mc, checkpoint, lbd):
     # set up dataset specific stuff
-    from dgm.config import config
+    from dgm.utils.config import config
     labels, n_iter, dimX, shape_high, ll = config(data_name, n_channel)
     if data_name == 'mnist':
-        from dgm.classifier.mnist import load_mnist
+        from dgm.dataset.mnist import load_mnist
     if data_name == 'notmnist':
-        from dgm.classifier.notmnist import load_notmnist
+        from dgm.dataset.notmnist import load_notmnist
 
     # import functionalities
     if method == 'onlinevi':
@@ -58,6 +58,7 @@ def main(data_name, method, dimZ, dimH, n_channel, batch_size, K_mc, checkpoint,
     if method == 'onlinevi' and K_mc > 1:
         string = string + '_K%d' % K_mc
     path_name = data_name + '_%s/' % string
+
     if not os.path.isdir('save/'):
         os.mkdir('save/')
     if not os.path.isdir('save/'+path_name):
@@ -100,6 +101,8 @@ def main(data_name, method, dimZ, dimH, n_channel, batch_size, K_mc, checkpoint,
         si_reg = None 
     n_layers_head = 2
     n_layers_enc = n_layers_shared + n_layers_head - 1
+
+    ################################################################################################
     for task in range(1, N_task+1):
         # first load data
         if data_name == 'mnist':
@@ -114,6 +117,10 @@ def main(data_name, method, dimZ, dimH, n_channel, batch_size, K_mc, checkpoint,
         # define the head net and the generator ops
         dec = generator(generator_head(dimZ, dimH, n_layers_head, 'gen_%d' % task), dec_shared)
         enc = encoder(dimX, dimH, dimZ, n_layers_enc, 'enc_%d' % task)
+
+        # model_vars = tf.global_variables()
+        # slim.model_analyzer.analyze_vars(model_vars, print_info=True)
+
         gen_ops.append(construct_gen(dec, dimZ, sampling=False)(N_gen))
         print('construct eval function...')
         eval_func_list.append(construct_eval_func(X_ph, enc, dec, ll, \

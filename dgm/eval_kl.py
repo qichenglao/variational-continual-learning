@@ -1,11 +1,8 @@
-import numpy as np
 import tensorflow as tf
 import sys, os
 import keras
 sys.path.extend(['alg/', 'models/', 'utils/'])
-from dgm.models.visualisation import plot_images
-from dgm.models.encoder_no_shared import encoder, recon
-from dgm.models.utils import init_variables, save_params, load_params, load_data
+from dgm.utils.utils import load_params
 from dgm.alg.eval_test_class import construct_eval_func
 from dgm.load_classifier import load_model
 
@@ -21,15 +18,15 @@ data_path = ''# TODO
 
 def main(data_name, method, dimZ, dimH, n_channel, batch_size, K_mc, checkpoint, lbd):
     # set up dataset specific stuff
-    from dgm.config import config
+    from dgm.utils.config import config
     labels, n_iter, dimX, shape_high, ll = config(data_name, n_channel)
 
     # import functionalities
     if method == 'onlinevi':
         from dgm.models.bayesian_generator import generator_head, generator_shared, \
-                               generator, construct_gen
+                               generator
     if method in ['ewc', 'noreg', 'si', 'si2', 'laplace']:
-        from dgm.models.generator import generator_head, generator_shared, generator, construct_gen
+        from dgm.models.generator import generator_head, generator_shared, generator
 
     # then define model
     n_layers_shared = 2
@@ -64,10 +61,10 @@ def main(data_name, method, dimZ, dimH, n_channel, batch_size, K_mc, checkpoint,
     
     for task in range(1):
         if data_name == 'mnist':
-            from dgm.classifier.mnist import load_mnist
+            from dgm.dataset.mnist import load_mnist
             _, X_test, _, Y_test = load_mnist([task])
         if data_name == 'notmnist':
-            from dgm.classifier.notmnist import load_notmnist
+            from dgm.dataset.notmnist import load_notmnist
             _, X_test, _, Y_test = load_notmnist(data_path, [task], conv = False)
         test_acc = 0.0; test_kl = 0.0
         N_test = X_test.shape[0]

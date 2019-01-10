@@ -1,6 +1,4 @@
-import numpy as np
-import tensorflow as tf
-from dgm.alg.helper_functions import *
+from dgm.utils.helper_functions import *
 import time
 
 def get_q_theta_params():

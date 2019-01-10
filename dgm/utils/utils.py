@@ -1,12 +1,9 @@
-import os
-import numpy as np
-import time
 import pickle
 import tensorflow as tf
 
 def load_data(data_name, path, labels = None, conv = False, seed = 0):
     if data_name == 'mnist':
-        from dgm.models.import_data_mnist import load_data_mnist
+        from dgm.dataset.import_data_mnist import load_data_mnist
         data_train, data_test, labels_train, labels_test = \
             load_data_mnist(path, labels, conv, seed)
             

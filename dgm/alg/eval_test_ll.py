@@ -1,6 +1,4 @@
-import numpy as np
-import tensorflow as tf
-from dgm.alg.helper_functions import *
+from dgm.utils.helper_functions import *
 import time
 
 def IS_estimate(x, enc, dec, ll, K = 100, sample_W = True, mu_pz = 0.0, log_sig_pz = 0.0):

@@ -1,6 +1,4 @@
-import numpy as np
-import tensorflow as tf
-from dgm.alg.helper_functions import *
+from dgm.utils.helper_functions import *
 import time
     
 def update_si_reg(sess, si_reg, new_params, old_params, w_params):
