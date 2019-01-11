@@ -25,6 +25,8 @@ def main(data_name, method, dimZ, dimH, n_channel, batch_size, K_mc, checkpoint,
         from dgm.dataset.mnist import load_mnist
     if data_name == 'notmnist':
         from dgm.dataset.notmnist import load_notmnist
+    if data_name == 'cifar10':
+        from dgm.dataset.cifar10 import load_cifar10
 
     # import functionalities
     if method == 'onlinevi':
@@ -109,6 +111,9 @@ def main(data_name, method, dimZ, dimH, n_channel, batch_size, K_mc, checkpoint,
             X_train, X_test, _, _ = load_mnist(digits = labels[task-1], conv = False)
         if data_name == 'notmnist':
             X_train, X_test, _, _ = load_notmnist(data_path, digits = labels[task-1], conv = False)
+        if data_name == 'cifar10':
+            X_train, X_test, _, _ = load_cifar10(digits = labels[task-1], conv = False)
+
         N_train = int(X_train.shape[0] * 0.9)
         X_valid_list.append(X_train[N_train:])
         X_train = X_train[:N_train]
