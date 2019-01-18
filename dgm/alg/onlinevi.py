@@ -13,7 +13,7 @@ def get_q_theta_params():
     
 def get_headnet_params(task):
     t_vars = tf.trainable_variables()
-    var_list = [var for var in t_vars if 'gen_head%d' % task in var.name]
+    var_list = [var for var in t_vars if 'gen_%d_head' % task in var.name]
     param_dict = {}
     for var in var_list:
         param_dict[var.name] = var	# make sure here is not a copy!
